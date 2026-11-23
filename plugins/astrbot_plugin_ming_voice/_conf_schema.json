@@ -1,0 +1,80 @@
+{
+  "enable": {
+    "description": "总开关",
+    "hint": "关掉后所有会话都只发文字，白名单保留不动。",
+    "type": "bool",
+    "default": true
+  },
+  "sessions": {
+    "description": "白名单（概率+关键词）：这些会话按概率掷骰子，命中关键词必发",
+    "hint": "写完整 umo 或前缀，一行一个：ming:FriendMessage:100000001（她私聊）、ming:FriendMessage（全部私聊）、写 * 表示全部。不在任何名单里的会话只发文字。",
+    "type": "list",
+    "default": ["ming:FriendMessage:100000001"]
+  },
+  "manual_sessions": {
+    "description": "只手动触发的会话：不掷概率，只有指定的人说「语音」才发",
+    "hint": "群里用这个。默认深水区 700000001——里面别人说「语音」不会触发，只有 manual_senders 里的人开口才算。",
+    "type": "list",
+    "default": ["ming:GroupMessage:700000001"]
+  },
+  "manual_senders": {
+    "description": "manual_sessions 里谁说话算数",
+    "hint": "QQ 号，一行一个。默认只有她 100000001。",
+    "type": "list",
+    "default": ["100000001"]
+  },
+  "model": {
+    "description": "百炼 TTS 模型",
+    "hint": "必须和音色 ID 的前缀配对：cosyvoice-v3.5-flash-skade-… 只能配 cosyvoice-v3.5-flash，配 cosyvoice-v1 会报 Model not exist。",
+    "type": "string",
+    "default": "cosyvoice-v3.5-flash"
+  },
+  "voice": {
+    "description": "音色 ID",
+    "hint": "留空则用主配置里 dashscope_tts 那个 provider 的音色。",
+    "type": "string",
+    "default": "cosyvoice-v3.5-flash-skade-2d6fa7aad8814c80a679e5662f024ecb"
+  },
+  "api_key": {
+    "description": "百炼 API Key",
+    "hint": "留空则用主配置里 dashscope_tts 那个 provider 的 key。",
+    "type": "string",
+    "default": ""
+  },
+  "max_chars": {
+    "description": "超过这么多字就不转语音",
+    "hint": "默认 220 字，约 55 秒。长回复转语音又慢又吵，直接发文字。",
+    "type": "int",
+    "default": 220
+  },
+  "hard_timeout": {
+    "description": "合成超时（秒）",
+    "hint": "超时就不发语音，改发文字，免得把整轮卡死。",
+    "type": "float",
+    "default": 30
+  },
+  "request_timeout_ms": {
+    "description": "单次请求超时（毫秒）",
+    "hint": "传给 dashscope SDK 的 call 超时。",
+    "type": "int",
+    "default": 20000
+  },
+  "backfill_delay": {
+    "description": "回灌历史前等几秒",
+    "hint": "框架写对话历史在发送之后，等它落完再把这条改写成「[语音] 原文」。默认 2 秒；要是回灌老失败（日志里「历史回灌失败」），调大一点。",
+    "type": "float",
+    "default": 2.0
+  },
+  "trigger_probability": {
+    "description": "概率触发：每条请求有多大概率发语音",
+    "hint": "默认 0.25。只在白名单会话里掷骰子；关键词命中时不掷，直接发。",
+    "type": "float",
+    "default": 0.25
+  },
+  "trigger_keywords": {
+    "description": "关键词触发：消息里出现这些词就必发语音",
+    "hint": "默认只有「语音」一个，故意不给别的词——多加一个就多一种误触发。`/语音` 那条指令走命令通道，不经过这里。",
+    "type": "list",
+    "default": ["语音"]
+  }
+}

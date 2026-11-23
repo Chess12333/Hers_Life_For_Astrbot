@@ -1,0 +1,5 @@
+name: astrbot_plugin_obs_export
+desc: 把对话炼成观察喂给星图：消息归档 + 定期提炼（QQ-Agent 旧库与新话合并）
+version: 0.1.0
+author: 溟
+repo: ""

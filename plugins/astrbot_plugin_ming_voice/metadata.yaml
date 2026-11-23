@@ -1,0 +1,14 @@
+name: astrbot_plugin_ming_voice
+display_name: 溟·嗓子
+short_desc: 用百炼 cosyvoice 复刻音色把文字回复换成语音，按会话白名单生效
+desc: >-
+  QQ 这边的溟用自己的嗓子说话。自带的 TTS 一开就是会话全开（
+  `is_tts_enabled_for_session` 没配置时默认 True），且只出 wav；这个插件把白名单
+  写在配置里，命中才转语音，其余照旧发文字。
+  音色来自百炼声音复刻（cosyvoice-v3.5-flash），模型与音色 ID 必须配对。
+  `/语音` 可以看当前会话是否生效。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

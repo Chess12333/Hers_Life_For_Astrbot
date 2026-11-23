@@ -1,0 +1,13 @@
+name: astrbot_plugin_ming_fishtalk
+display_name: 溟·鱼话（人味 + 自检）
+short_desc: 照真人基线说话，说完自己过一遍：鱼八股、AI 腔、结构腔扎堆
+desc: >-
+  合并 fishtalk（语料池 / 文风包 / 鱼八股检查）与 dsh-fish-tone 的判断层（结构腔密度、
+  扎堆判定、逐处该不该留），给 QQ 这一侧的嘴用。开聊前把「说话的松紧」注入这一轮；
+  群里的真人发言写进 ~/.fishtalk 语料池（跟 DSH 侧共用）；说完只报不改。
+  不往成稿里插语气词、不补语病——那是演人，不是像人。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

@@ -1,0 +1,14 @@
+name: astrbot_plugin_ming_bili
+display_name: 溟·看B站
+short_desc: 搜片、读简介、取文字稿、看热评、抽帧看图——不用登录态的先走匿名接口
+desc: >-
+  给 QQ 这一侧的溟补上「看 B 站」：bili_search 搜片、bili_video 读简介和热评、
+  bili_comments 读评论区、bili_transcript 取文字稿（官方字幕拿不到就走 bili-humanism
+  CLI，再不行本地 ASR）、bili_frames 抽帧拼一张交给视觉模型描述并把图发到聊天。
+  另有一个手打入口 /看b站 <链接>，出一张卡（标题、UP、数据、热评、封面）。
+  写操作（点赞/投币/评论/收藏）不在这里，留在 DSH 侧，那边有台账。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

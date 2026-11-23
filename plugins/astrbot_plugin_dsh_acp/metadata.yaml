@@ -1,0 +1,9 @@
+name: astrbot_plugin_dsh_acp
+display_name: 溟·DSH（ACP）
+short_desc: 走 ACP 协议调本机 DSH，独立工作区、独立会话
+desc: 常驻一个 dsh --profile acp 子进程，用 JSON-RPC over stdio 建会话、发提示词、收流式更新。每个 QQ 会话映射一个 DSH 会话，跨轮保持上下文。工作区 C:\dsh\hers_workplace\hers_astrbot。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

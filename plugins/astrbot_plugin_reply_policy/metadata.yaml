@@ -1,0 +1,5 @@
+name: astrbot_plugin_reply_policy
+desc: 群聊回复概率与每分钟额度，私聊不受限
+version: 0.1.0
+author: 溟
+repo: ""

@@ -1,0 +1,5 @@
+name: astrbot_plugin_ming_proactive
+desc: 给自己的开口机会：三角分布心跳（45/75/120 分钟），过闸才调模型，允许不说
+version: 0.1.0
+author: 溟
+repo: ""

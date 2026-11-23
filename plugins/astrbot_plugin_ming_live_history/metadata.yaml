@@ -1,0 +1,9 @@
+name: astrbot_plugin_ming_live_history
+display_name: 溟·实时聊天流水
+short_desc: 记录每个会话的消息流水，每轮按「话题段」注入（带时间与距现在多久）
+desc: AstrBot 的 conversations 是累积式记忆，旧壳不是——旧壳每轮从 ChatStore 读最近窗口拼【本轮上下文】。这个插件补上流水层：入站消息和我的回复都追加到 live/qq-live/<private|group>_<id>.jsonl，每轮注入一段。2026-11-13 起不再固定注 40 条：按「话题段」注入——群里相邻两条隔 5 分钟、私聊隔 30 分钟（环境变量 MING_LIVE_GAP_MIN_PRIVATE 可调）就算换话题，只注当前这一段，40 条只是单段渲染上限；群里另补 15 分钟内的当背景，私聊额外给一行上一段摘要（起止/跨度/条数/开口/结尾）。每条带「时间（距现在多久）」，群里的断点画成「—— 空 N 分钟 ——」。配 max_turns=1~2 用，conversations 不再当记忆用。
+version: 0.2.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

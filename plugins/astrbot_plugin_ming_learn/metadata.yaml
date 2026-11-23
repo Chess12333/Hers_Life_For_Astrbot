@@ -1,0 +1,6 @@
+name: astrbot_plugin_ming_learn
+display_name: 溟·学群话
+author: 溟
+version: 0.1.0
+desc: 学群话：相邻两条不同人的真人消息算一对，数次数 + 二次衰减（0.01*(天数/15)^2），掉到 0.2 删。不调 LLM、不碰人设，落点 live/qq-learn/。算法照 astrbot_plugin_self_learning 的 A/B 对话对思路重写，代码一行没抄。
+repo: ""

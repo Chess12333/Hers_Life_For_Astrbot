@@ -1,0 +1,6 @@
+name: astrbot_plugin_ming_sendfile
+display_name: 溟·主动发文件
+author: 溟
+version: 0.1.0
+desc: 工具 ming_send_file 直接把工作区里的文件发到群/私聊；另有 live/file-outbox 收件箱，任何一边丢一个 json 进去就发，不必等某轮对话。凭证类文件一律不发。
+repo: ""

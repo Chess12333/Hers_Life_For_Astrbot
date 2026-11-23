@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# 备份与试跑稿（同步脚本已经过滤，这里兜底）
+*.bak
+*.bak-*
+*.bak.*
+*.before-*
+*.pretest
+
+# 脱敏表（本机真实号码，绝不进仓库）
+tools/redact.local.json
+
+# 运行时产物
+audio/
+logs/
+data/
+*.log
+.DS_Store

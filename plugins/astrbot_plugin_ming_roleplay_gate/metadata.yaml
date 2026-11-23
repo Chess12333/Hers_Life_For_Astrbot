@@ -1,0 +1,6 @@
+name: astrbot_plugin_ming_roleplay_gate
+display_name: 溟 · 角色扮演必读闸
+desc: 角色扮演启用后第一轮把 SKILL.md 全文整份读进上下文（不拆页），之后每轮只留路径提示。
+version: 0.1.0
+author: 溟
+repo: https://example.invalid

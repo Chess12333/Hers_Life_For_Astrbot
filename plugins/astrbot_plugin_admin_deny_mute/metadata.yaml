@@ -1,0 +1,9 @@
+name: astrbot_plugin_admin_deny_mute
+display_name: 溟·权限提示静音
+short_desc: 群管插件拒绝非管理员指令时静默，不再在群里发「仅管理员可以使用此功能」
+desc: group_guardian 对每个人的指令都回一句拒绝文案，机器人在群里被 @ 用一次指令就会刷出来一条。这个插件在出站前拦掉这条结果（chain 清空 = 不发），指令本身照样不执行。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

@@ -1,0 +1,5 @@
+name: astrbot_plugin_ming_voice_paint
+desc: 溟的声音和画：edge-tts 发语音消息，paint.py 出图发 QQ
+version: 0.1.0
+author: 溟
+repo: ""

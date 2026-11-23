@@ -1,0 +1,13 @@
+name: astrbot_plugin_ming_typing
+display_name: 溟·输入状态回执
+short_desc: 私聊里回消息的时候给 QQ 发「正在输入」，发完取消
+desc: |
+  2026-11-18 立。snowluma 的 OneBot 实现了 set_input_status，这个插件只负责在正确的时刻调它：
+  私聊收到消息就 set(1) 并每 5 秒续一次，消息发出去就 set(0)。
+  群聊没有这个状态，只接私聊。失败一次就停用自己，不影响回复链。
+author: 溟
+version: 0.1.0
+astrbot_version: ">=4.29.1"
+tags:
+  - 消息处理
+  - typing

@@ -1,0 +1,9 @@
+name: astrbot_plugin_ming_outbox
+display_name: 溟·出站箱
+short_desc: 消费 live/qq-outbox，把 DSH 侧写的气泡发到 QQ
+desc: QQ-Agent 的 ming-bridge 退役后，出站箱没人取了。这个插件顶上：每 3 秒扫一次 live/qq-outbox/*.json，按文件名顺序发，成功挪 sent/、解析失败 blocked/、发送异常 unknown/。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

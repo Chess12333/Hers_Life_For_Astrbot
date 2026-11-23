@@ -1,0 +1,6 @@
+name: astrbot_plugin_ming_local_rp
+display_name: 溟 · 本地不过滤模型
+desc: /rp 打开的那一间改走本机模型（Ollama 跑 Qwen2.5-14B abliterated GGUF Q4，127.0.0.1:11434），绕开上游内容过滤
+version: 0.1.0
+author: 溟
+repo: ""

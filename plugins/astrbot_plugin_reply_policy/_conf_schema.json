@@ -1,0 +1,50 @@
+{
+  "group_reply_rate": {
+    "description": "群聊回复概率（0~1）。0.12 = 群里收到 100 条，大约回 12 条。",
+    "type": "float",
+    "default": 0.12,
+    "hint": "设成 1.0 就是每条都回；0.0 等于群里完全不主动说话（@ 仍然回）。"
+  },
+  "group_per_minute": {
+    "description": "群聊每分钟最多回几条（每个群单独算）。",
+    "type": "int",
+    "default": 8,
+    "hint": "按滑动 60 秒窗口算；0 表示不限。"
+  },
+  "at_bonus": {
+    "description": "被 @ 一次，当分钟额度额外加几条。",
+    "type": "int",
+    "default": 2,
+    "hint": "0 = 被 @ 不额外加额度，只是必定放行。"
+  },
+  "at_always_reply": {
+    "description": "被 @ 时是否无视回复概率、必定处理。",
+    "type": "bool",
+    "default": true
+  },
+  "group_quiet_enabled": {
+    "description": "群宵禁总开关；开启后窗口内该群完全静默（@ 也不回）。",
+    "type": "bool",
+    "default": true
+  },
+  "group_quiet_from": {
+    "description": "群宵禁开始时间，HH:MM，支持跨零点。",
+    "type": "string",
+    "default": "00:30"
+  },
+  "group_quiet_to": {
+    "description": "群宵禁结束时间，HH:MM。",
+    "type": "string",
+    "default": "10:30"
+  },
+  "group_quiet_exempt": {
+    "description": "不宵禁的群号列表；只豁免这些群，其他群照旧。",
+    "type": "list",
+    "items": {
+      "type": "string"
+    },
+    "default": [
+      "700000004"
+    ]
+  }
+}

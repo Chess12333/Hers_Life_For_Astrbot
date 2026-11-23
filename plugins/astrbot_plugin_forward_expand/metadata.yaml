@@ -1,0 +1,17 @@
+name: astrbot_plugin_forward_expand
+display_name: 合并转发展开
+short_desc: 把 QQ 的合并转发消息展开成正文再交给模型
+desc: |
+  AstrBot 收到合并转发时只拿到一个 Forward 段（只有一个 id，没有内容），
+  于是内置 runner 判成空消息直接 return None，模型根本不被调用——表现就是「发转发没回应」。
+
+  这个插件在消息进入 LLM 之前，用 get_forward_msg 逐层递归展开（上限 4 层），
+  把每层的发送者昵称和文字拼成正文写回 message_str；转发里的图片会作为 Image 段补进消息，
+  能走 caption 或直接喂给多模态模型。
+
+  协议端实测：SnowLuma 2.3.3-node，get_forward_msg 可用，但内层 id 有时效，必须当场展开。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

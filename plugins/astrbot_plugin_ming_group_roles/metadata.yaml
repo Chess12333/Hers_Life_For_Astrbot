@@ -1,0 +1,9 @@
+name: astrbot_plugin_ming_group_roles
+display_name: 溟·群角色识别
+short_desc: 认得出群里谁是群主、谁是管理员（缓存 6 小时，启动即拉）
+desc: 她 2026-11-17 08:22 要的：所有群都加识别群主/管理员。这个插件用 get_group_list + get_group_member_list 把机器人所在每个群的 owner/admin 存成 data/ming/group-roles.json（结构 group_id → {updated_at, owner:[], admins:[], members_count}），串行拉、间隔 1 秒抗频控；启动拉一遍，每群 6 小时过期，每 30 分钟用 get_group_info 的成员数做增减信号，变了就重拉那一群；拉失败保留旧缓存只记日志，绝不阻塞回复。群里每轮 LLM 请求前注入一行「你正在跟谁说话 + 本群群主/管理员是谁」。对外还能直接查：python data/plugins/astrbot_plugin_ming_group_roles/query.py <群号> <QQ号>，或在别处 import main.role_of(group_id, user_id) 得 owner/admin/member/unknown。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

@@ -1,0 +1,6 @@
+name: astrbot_plugin_ming_said
+display_name: 溟·出站记账
+author: 溟
+version: 0.1.0
+desc: 出站前把这一句落到 live/qq-said.jsonl。不改内容、不拦、不重发。只盖被动回话，主动起话各自有账。
+repo: ""

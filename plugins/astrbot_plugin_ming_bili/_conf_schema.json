@@ -1,0 +1,27 @@
+{
+  "vision_provider_id": {
+    "description": "抽帧后用来描述画面的模型",
+    "hint": "要能看图。默认用 AstrBot 里配好的 mimo（openai/mimo-v2.6-pro）；没有就留空，抽帧照样发图，只是没有文字描述。",
+    "type": "string",
+    "_special": "select_provider",
+    "default": "openai/mimo-v2.6-pro"
+  },
+  "enable_asr": {
+    "description": "没有字幕轨时走本地语音转写",
+    "hint": "scripts/bili-get.py，GPU 上 3 分钟的片约 20 秒；关掉就只有官方字幕可用。",
+    "type": "bool",
+    "default": true
+  },
+  "max_asr_seconds": {
+    "description": "超过这个秒数不自动转写",
+    "hint": "默认 900（15 分钟）。长片转写太慢，工具会改为提示看简介和热评。",
+    "type": "int",
+    "default": 900
+  },
+  "send_frames_to_chat": {
+    "description": "抽帧后把拼图也发到聊天里",
+    "hint": "关掉就只把画面描述给模型，不往聊天里贴图（省事、也不打扰群里）。",
+    "type": "bool",
+    "default": true
+  }
+}

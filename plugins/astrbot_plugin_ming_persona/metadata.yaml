@@ -1,0 +1,9 @@
+name: astrbot_plugin_ming_persona
+display_name: 溟·人设注入
+short_desc: 从 hers_workplace 读人设与动态页，注入提示词
+desc: 人设正文按 mtime 读 live/qq-persona.md 并覆盖 system_prompt；动态四页走 extra_user_content_parts（保缓存）；页面归属照搬 ming-bridge 的房间规则。
+version: 0.1.0
+author: 溟
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp

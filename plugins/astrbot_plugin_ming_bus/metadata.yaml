@@ -1,0 +1,6 @@
+name: astrbot_plugin_ming_bus
+display_name: 溟·总线
+author: 溟
+version: 0.1.0
+desc: 两个壳之间只递要紧的那一层。她那一间私聊注入 live/bus.jsonl 最近 15 条；工具 ming_bus 让这边写 decide/promise/file/quote 四类。不收闲话、不收群聊、不收别人的事。
+repo: ""
