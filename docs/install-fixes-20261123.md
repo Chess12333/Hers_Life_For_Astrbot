@@ -87,6 +87,7 @@ MING_GROUPS=（有群再填）
 
 - 24 个插件的 `main.py` + 改过的 `tools/*.py`：全部 `ast.parse` 通过（语法层）。
 - `index.js` / `neuron.mjs`：`node --check` 通过；`readQqObservations('')` 实测返回 `[]`。
-- `tools/check-placeholders.py`：在本仓实跑，输出正常，`--strict` 会返回 1（剩下的都是 `_conf_schema` 默认值和示例文案）。
+- `tools/check-placeholders.py`：在本仓实跑，输出正常。`--strict` 当时会返回 1（剩下的都是 `_conf_schema` 默认值和示例文案）；
+  **当晚这一条已经清掉了**：死号接上 `MING_HER_QQ` / `MING_QUIET_EXEMPT`，配置模板默认值与 `qa_` 脚本不再算代码残留，现在返回 0。
 - **没验的**：没有真起一台 AstrBot 跑一轮对话，也没有重启 DSH 看面板。语法层干净不等于运行期没坑，
   尤其 `persona` 那个后台任务和 `dsh-ming-graph` 的 getter 展开——装完第一件事看日志有没有 warning。
