@@ -12,13 +12,18 @@ from collections import defaultdict, deque
 from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
+# 2026-11-23：平台 id 和名字不进代码。AstrBot 里这个平台叫什么就设 MING_PLATFORM_ID（默认 ming）。
+PLATFORM_ID = os.environ.get("MING_PLATFORM_ID", "ming")
+SELF_NAME = os.environ.get("MING_SELF_NAME", "溟")
 
 
 
 # ── 察言观色：她说"安静"就一直安静到话题结束（2026-11-11 17:3x 她提的）────────
 # 判据不是"安静几条"，是**话题**：群消息静默 15 分钟 = 换个话题了，自动解除。
 # 状态写在 live/mute-state.json，跨重启还在。
-MUTE_FILE = r"C:\dsh\hers_workplace\live\mute-state.json"
+MUTE_FILE = _MING_WS + r"\live\mute-state.json"
 MUTE_WORDS = ("安静", "别说了", "闭嘴", "别接话", "先别说", "消停", "别插嘴", "别吵")
 TOPIC_IDLE_SEC = 15 * 60
 TOPIC_CHECK_SEC = 5 * 60   # 静默期每 5 分钟调一次模型判「换话题了吗」
@@ -27,7 +32,7 @@ TOPIC_PROMPT = (
     "yes = 话题换了（换成聊另一件事）\n"
     "no = 还在聊原来那件事"
 )
-HER_ID = "100000001"
+HER_ID = os.environ.get("MING_HER_QQ") or "100000001"
 
 # ── 两轮思考：先判「接不接」，接才写（2026-11-13 10:5x 她定的）─────────────
 # 起因：thinking 漏进正文（私聊 11-13 01:27 那条，正文开头冒出「在吗」）。
@@ -37,8 +42,8 @@ HER_ID = "100000001"
 #   判「不接」就不进第二轮（省下那次生成，也不会再拿半句话占位）。
 # 这一轮只管群里的闲聊通道（@ / 叫名字 / 问句本来必过，没什么可判的，
 # 多问一次是白花钱）。开关在 live/reply-preflight.json，关掉就退回原来的抽签。
-PREFLIGHT_FILE = r"C:\dsh\hers_workplace\live\reply-preflight.json"
-PREFLIGHT_LOG = r"C:\dsh\hers_workplace\live\reply-preflight.jsonl"
+PREFLIGHT_FILE = _MING_WS + r"\live\reply-preflight.json"
+PREFLIGHT_LOG = _MING_WS + r"\live\reply-preflight.jsonl"
 # 2026-11-23 02:5x（她定的）：判「接不接」用 flash，真正说话仍用 pro；不碰官方 deepseek。
 PREFLIGHT_PROVIDER_ID = "openai/deepseek-v4.1-flash"
 # 2026-11-17（E-3）：这个插件是「不接」的唯一生产者。
@@ -121,7 +126,7 @@ def _preflight_cfg() -> dict:
 # 第一轮的每一个「接」都是插话（只有非 @、非叫名字的闲聊才走到第一轮）。
 # 节奏交给判定频率管，不设每日额度：距上次判定不足 judgeEverySec（默认 180 秒）
 # 就既不判也不接——省掉那次模型调用，也不会在别人连发时反复打扰。
-INSERT_STATE = r"C:\dsh\hers_workplace\live\reply-insert-state.json"
+INSERT_STATE = _MING_WS + r"\live\reply-insert-state.json"
 
 
 def _load_insert_state() -> dict:
@@ -178,7 +183,7 @@ def _save_mute(d: dict) -> None:
 
 
 # ── 别的 AI 说话，一律不接（2026-11-11 18:5x 她：「不要一直和ai聊天防止递归」）──
-AI_SENDERS_FILE = r"C:\dsh\hers_workplace\live\ai-senders.json"
+AI_SENDERS_FILE = _MING_WS + r"\live\ai-senders.json"
 
 
 # ── 表情包不接（2026-11-18 12:0x 她说的：「注意区分图片是表情包还是图片，如果是表情包就不需要回复」）
@@ -271,7 +276,7 @@ def _bare_at(event) -> bool:
 
 
 # 2026-11-18 15:3x：禁言熔断。禁言期进来的每条都别花钱（今天 700000001 空跑上百轮）。
-MUTE_NOW_FILE = r"C:\dsh\hers_workplace\live\qq-mute-now.json"
+MUTE_NOW_FILE = _MING_WS + r"\live\qq-mute-now.json"
 
 
 def _is_group_muted_self(gid) -> bool:
@@ -312,7 +317,7 @@ def in_quiet_window(start, end, cur_min: int) -> bool:
     """群宵禁判定：左闭右开，支持跨零点。配置坏了返回 False（不拦）。"""
     # 2026-11-19：临时关一天——live/curfew-off 里写当天日期就不宵禁（第二天自动恢复）
     try:
-        _p = r"C:\dsh\hers_workplace\live\curfew-off"
+        _p = _MING_WS + r"\live\curfew-off"
         if os.path.exists(_p):
             with open(_p, encoding="utf-8") as _f:
                 _d = _f.read().strip()
@@ -421,8 +426,8 @@ class ReplyPolicy(Star):
 
     def _self_name(self, event: AstrMessageEvent) -> str:
         umo = getattr(event, "unified_msg_origin", "") or ""
-        if umo.startswith("ming:"):
-            return "溟"
+        if umo.startswith(PLATFORM_ID + ":"):
+            return SELF_NAME
         if umo.startswith("linglan:"):
             return "岚"
         return ""

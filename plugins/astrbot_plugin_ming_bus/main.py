@@ -26,14 +26,16 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.provider import ProviderRequest
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 try:  # v4.30+
     from astrbot.api.agents import TextPart
 except Exception:  # 4.29.x
     from astrbot.core.agent.message import TextPart
 
-BUS = r"C:\dsh\hers_workplace\live\bus.jsonl"
-OWNER_QQ = "100000001"
+BUS = _MING_WS + r"\live\bus.jsonl"
+OWNER_QQ = os.environ.get("MING_HER_QQ") or "100000001"
 TAIL_N = 15
 KINDS = ("decide", "promise", "file", "quote")
 

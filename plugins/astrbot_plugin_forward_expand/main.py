@@ -31,8 +31,10 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.message_components import Forward, Image, Plain, Reply
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
-PROBE = r"C:\dsh\hers_workplace\live\forward-expand.log"
+PROBE = _MING_WS + r"\live\forward-expand.log"
 MAX_DEPTH = 4
 MAX_LINES = 120
 

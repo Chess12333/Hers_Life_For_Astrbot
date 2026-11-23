@@ -17,6 +17,8 @@ import os
 import re
 import time
 from collections import Counter
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 HOME = os.environ.get("FISHTALK_HOME") or os.path.join(os.path.expanduser("~"), ".fishtalk")
 PACK = os.path.join(HOME, "pack.json")
@@ -24,7 +26,7 @@ CORPUS = os.path.join(HOME, "corpus.jsonl")
 SAID = os.path.join(HOME, "said.jsonl")
 SEEN = os.path.join(HOME, ".ming-qq-seen.json")
 
-LIVE = r"C:\dsh\hers_workplace\live"
+LIVE = _MING_WS + r"\live"
 STATE = os.path.join(LIVE, "fishtalk-qq.json")
 PROBE = os.path.join(LIVE, "fishtalk-qq.log")
 

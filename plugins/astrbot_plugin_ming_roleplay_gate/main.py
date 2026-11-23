@@ -20,13 +20,15 @@ import urllib.request
 from astrbot.api import logger, star
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star, register
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 try:  # v4.30+
     from astrbot.api.agents import TextPart
 except Exception:  # 4.29.x
     from astrbot.core.agent.message import TextPart
 
-ROLEPLAY_STATE = r"C:\dsh\hers_workplace\live\roleplay-on.json"
+ROLEPLAY_STATE = _MING_WS + r"\live\roleplay-on.json"
 SKILL = r"C:\dsh\astrbot\data\skills\roleplay\SKILL.md"
 
 

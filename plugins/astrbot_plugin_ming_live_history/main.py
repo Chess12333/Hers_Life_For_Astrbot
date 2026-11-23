@@ -27,14 +27,16 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.provider import ProviderRequest
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 try:  # v4.30+
     from astrbot.api.agents import TextPart
 except Exception:  # 4.29.x
     from astrbot.core.agent.message import TextPart
 
-LIVE_DIR = r"C:\dsh\hers_workplace\live\qq-live"
-CHAT_DIR = r"C:\dsh\hers_workplace\live\qqagent-chat"   # 全量原话（md）
+LIVE_DIR = _MING_WS + r"\live\qq-live"
+CHAT_DIR = _MING_WS + r"\live\qqagent-chat"   # 全量原话（md）
 
 BASE_N = 40          # 单段最多渲染多少条。2026-11-14 起是**上限**，不是口径——口径按时间切段
 MAX_N = 200          # 找话题源头时最多往前翻多少条

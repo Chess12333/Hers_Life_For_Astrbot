@@ -1,0 +1,3 @@
+# 2026-11-23：main.py 顶部无条件 import aiohttp。
+# Pillow（PIL）是可选的——缺了只是发不出拼图，插件照常加载，所以不写在这里。
+aiohttp>=3.9

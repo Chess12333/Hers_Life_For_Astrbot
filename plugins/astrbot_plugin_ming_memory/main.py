@@ -38,13 +38,15 @@ from datetime import datetime, timezone
 from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 NOTES_DIR = r"C:\Users\you\.dsh\memory\notes"
 
 # ── 2026-11-15：chat_recall 换成 RAG（向量）检索 ─────────────────────
 # 索引由网页那边的 scripts\embed-all.mjs 建（live/qq-corpus.jsonl + qq-emb.f32），
 # 每 30 分钟由计划任务 MingQQRagSync 增量同步一次。这里只读，不写。
-RAG_LIVE = r"C:\dsh\hers_workplace\live"
+RAG_LIVE = _MING_WS + r"\live"
 RAG_EMB = os.path.join(RAG_LIVE, "qq-emb.f32")
 RAG_IDS = os.path.join(RAG_LIVE, "qq-emb-ids.json")
 RAG_CORPUS = os.path.join(RAG_LIVE, "qq-corpus.jsonl")
@@ -155,18 +157,18 @@ def _rag_recent(who: str, since_s: str, until_s: str, k: int):
     rows.sort(key=lambda r: int(r.get("t1") or 0))
     return rows[-k:]
 
-TODO_FILE = r"C:\dsh\hers_workplace\live\todo.md"
+TODO_FILE = _MING_WS + r"\live\todo.md"
 # 旧壳 QQ-Agent 的印象档（2026-11-11 导出，一人一文件，文件名是 QQ 号）
-IMPR_DIR = r"C:\dsh\hers_workplace\live\qqagent-memory\impressions"
-ABOUT_DIR = r"C:\dsh\hers_workplace\about"
-ABOUT_BY_QQ = {"100000001": "她", "100000002": "群友B", "100000003": "群友C"}
-PEOPLE_DIR = r"C:\dsh\hers_workplace\people"
+IMPR_DIR = _MING_WS + r"\live\qqagent-memory\impressions"
+ABOUT_DIR = _MING_WS + r"\about"
+ABOUT_BY_QQ = json.loads(os.environ["MING_ABOUT_BY_QQ"]) if os.environ.get("MING_ABOUT_BY_QQ") else {"100000001": "她", "100000002": "群友B", "100000003": "群友C"}
+PEOPLE_DIR = _MING_WS + r"\people"
 # 旧壳原始聊天记录（2026-11-11 从 evidence.jsonl 导出，按会话分文件）
-CHAT_DIR = r"C:\dsh\hers_workplace\live\qqagent-chat"
+CHAT_DIR = _MING_WS + r"\live\qqagent-chat"
 # 新壳（AstrBot）流水：live/qq-live/{private|group}_{号}.jsonl，一行一条，ts 毫秒
-LIVE_DIR = r"C:\dsh\hers_workplace\live\qq-live"
+LIVE_DIR = _MING_WS + r"\live\qq-live"
 # 谁能写 / 谁能看到正文（她本人、另一个使用者）
-OWNERS = {"100000001", "100000003"}
+OWNERS = {x.strip() for x in (os.environ.get("MING_OWNERS") or "100000001,100000003").split(",") if x.strip()}
 MAX_SCAN = 400
 MAX_SNIPPET = 160
 _cache: dict[str, tuple[float, str]] = {}

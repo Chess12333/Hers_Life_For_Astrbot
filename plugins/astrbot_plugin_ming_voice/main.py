@@ -31,6 +31,8 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.message_components import Plain, Record
 from astrbot.api.star import Context, Star, register
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 
 @register(
@@ -99,12 +101,21 @@ class MingVoice(Star):
         for a in items:
             if a == "*" or umo == a or umo.startswith(a + ":"):
                 return True
+        # 2026-11-23：换了平台（umo 前缀不是 ming）时，作者的默认白名单一条都匹配不上，
+        # 语音就静默不发——装的人根本不知道为什么没声音。这里只报一次，说清是白名单的平台写错了。
+        if items and not getattr(self, "_umo_warned", False):
+            plat = umo.split(":", 1)[0]
+            if all(a.split(":", 1)[0] != plat for a in items):
+                self._umo_warned = True
+                logger.warning(
+                    "[ming_voice] 白名单里没有一条属于当前平台 %r（现在是 %s）。改成 %r 或写 * 才会发语音",
+                    plat, ", ".join(items)[:120], plat + ":FriendMessage:<你的号>")
         return False
 
     # ── 会话级语音开关（她说不要就别发；写文件，重启不丢）─────────
     # 2026-11-18 02:2x 溟加。起因：她说「大晚上的不要发语音」，插件把它当关键词，
     # 连发两条。光排除否定词不够——她说的是「这个点别发」，那是状态，不是一次性的句子。
-    VOICE_STATE = r"C:\dsh\hers_workplace\live\qq-voice-off.json"
+    VOICE_STATE = _MING_WS + r"\live\qq-voice-off.json"
 
     def _load_off(self) -> dict:
         try:
@@ -204,8 +215,8 @@ class MingVoice(Star):
     # 她说的「云端生成音色到本地留档」：音色在阿里云，本地要留的是
     # ① model + voice 这个配对（写进 manifest，不写 key）
     # ② 每次合成的 mp3（拷进 samples/，缓存目录会滚动删，这里不删）
-    VOICE_BANK = r"C:\dsh\hers_workplace\live\voice-bank"
-    QUEUE = r"C:\dsh\hers_workplace\live\voice-bank\queue.json"
+    VOICE_BANK = _MING_WS + r"\live\voice-bank"
+    QUEUE = _MING_WS + r"\live\voice-bank\queue.json"
 
     def _bank_manifest(self, entry: dict) -> None:
         path = os.path.join(self.VOICE_BANK, "manifest.json")

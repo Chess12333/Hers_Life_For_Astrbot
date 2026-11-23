@@ -34,8 +34,10 @@ from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.message_components import Image, Plain, Record
 from astrbot.api.star import Context, Star, register
 from astrbot.core.message.message_event_result import MessageChain
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
-HER = r"C:\dsh\hers_workplace"
+HER = _MING_WS
 PAINT_PY = os.path.join(HER, "scripts", "paint.py")
 PAINT_PYTHON = r"C:\dsh\sds-venv\Scripts\python.exe"
 TEMP = r"C:\dsh\astrbot\data\temp"

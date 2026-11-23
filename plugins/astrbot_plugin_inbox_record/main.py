@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 import uuid
 
@@ -57,6 +58,20 @@ def _message_id(event: AstrMessageEvent):
     except Exception:  # noqa: BLE001
         pass
     return "gen-" + uuid.uuid4().hex, "generated"
+
+
+_REMINDER_RE = re.compile(r"<system[-_]reminder>[\s\S]*?</system[-_]reminder>", re.I)
+
+
+def _clean_text(text: str) -> str:
+    """2026-11-23：平台把 <system_reminder>Current datetime …</system_reminder> 接在正文尾巴上。
+
+    原样落盘，它就会跟着下游（兴趣唤醒、上下文拼装）一起进模型。落盘前剥掉——
+    这是给模型看的话，不是审计原文。
+    """
+    s = _REMINDER_RE.sub(" ", text or "")
+    s = re.sub(r"\[MSG_ID:[^\]]*\]", " ", s)
+    return re.sub(r"[ \t]+", " ", s).strip()
 
 
 def _append(line: dict) -> None:
@@ -125,7 +140,7 @@ class InboxRecord(Star):
                         "nickname": str(event.get_sender_name() or ""),
                     },
                     "message": [
-                        {"type": "text", "data": {"text": event.message_str or ""}}
+                        {"type": "text", "data": {"text": _clean_text(event.message_str or "")}}
                     ],
                 },
             }

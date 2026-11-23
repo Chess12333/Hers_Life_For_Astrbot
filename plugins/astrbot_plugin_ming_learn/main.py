@@ -38,16 +38,18 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.provider import ProviderRequest
 from astrbot.api.star import Context, Star, register
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 try:  # v4.30+
     from astrbot.api.agents import TextPart
 except Exception:  # 4.29.x
     from astrbot.core.agent.message import TextPart
 
-STORE = r"C:\dsh\hers_workplace\live\qq-learn"
+STORE = _MING_WS + r"\live\qq-learn"
 
 # 2026-11-18 修：别把别的 AI / 群管家 / 口癖当真人接话学进去
-AI_SENDERS_FILE = r"C:\dsh\hers_workplace\live\ai-senders.json"
+AI_SENDERS_FILE = _MING_WS + r"\live\ai-senders.json"
 Q_BUTLER = "2854196310"
 TIC_RE = re.compile(r"喵|喵呜|本鱼|鱼鱼|捏")
 AI_NICK_RE = re.compile(r"[（(][^）)]{0,30}ai[）)]", re.I)

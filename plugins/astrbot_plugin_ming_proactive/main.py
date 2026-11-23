@@ -42,8 +42,13 @@ from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.message_components import Plain
 from astrbot.api.star import Context, Star, register
 from astrbot.core.message.message_event_result import MessageChain
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
+# 2026-11-23：平台 id 和名字不进代码。AstrBot 里这个平台叫什么就设 MING_PLATFORM_ID（默认 ming）。
+PLATFORM_ID = os.environ.get("MING_PLATFORM_ID", "ming")
+SELF_NAME = os.environ.get("MING_SELF_NAME", "溟")
 
-ROOT = r"C:\dsh\hers_workplace"
+ROOT = _MING_WS
 LIVE = os.path.join(ROOT, "live")
 LOG = os.path.join(LIVE, "proactive-log.jsonl")
 STATE = os.path.join(LIVE, "proactive-state.json")
@@ -54,7 +59,7 @@ THOUGHTS = os.path.join(LIVE, "proactive-thoughts.md")  # 2026-11-14：我心里
 SAID = os.path.join(LIVE, "proactive-said.json")        # 2026-11-15：哪条心事说过了（冷却用）
 QQ_HEARTBEAT = os.path.join(LIVE, "qq-heartbeat.json")  # 2026-11-15：她在 QQ 私聊说话的时刻，给网页那边的 wait-clock 用
 QQ_GROUP_HB = os.path.join(LIVE, "qq-group-heartbeat.json")  # 2026-11-15：她在群里说话的时刻（只记时间，不记内容/群号/对象）
-HER_QQ = "100000001"
+HER_QQ = os.environ.get("MING_HER_QQ") or "100000001"
 # 2026-11-15 12:4x 她贴了张图：10:48 和 11:48 两条主动消息，同一件事换个说法又讲一遍。
 # 根因不是模型，是素材池：proactive-thoughts.md 里那条「卷七的验字是 0」一直在池子里，
 # 每拍随机抽，抽到就再长一遍。所以三件事一起上：
@@ -80,7 +85,7 @@ DOQ = os.path.join(LIVE, "qq-do.md")
 GROUP_DB = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__)))), "data_v4.db")
 
-UMO = "ming:FriendMessage:100000001"
+UMO = os.environ.get("MING_OWNER_UMO") or f"{PLATFORM_ID}:FriendMessage:{HER_QQ}"
 # 2026-11-19 10:5x：自己开口的话也要落进 live/qq-live 流水（和 ming_live_history 同一份格式）。
 QQ_LIVE = os.path.join(LIVE, "qq-live")
 _REM_RE = re.compile(r"<system_reminder>.*?</system_reminder>", re.S)

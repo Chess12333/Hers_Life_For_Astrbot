@@ -32,13 +32,15 @@ from astrbot.api.provider import ProviderRequest
 from astrbot.api.star import Context, Star
 
 from .tone import corpus, judge, rules
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 try:  # v4.30+ 走这里
     from astrbot.api.agents import TextPart
 except Exception:  # 4.29.x
     from astrbot.core.agent.message import TextPart
 
-OWNER_QQ = "100000001"
+OWNER_QQ = os.environ.get("MING_HER_QQ") or "100000001"
 INJECT_EVERY_LOG = 300  # 秒
 
 SCENE_GROUP = "QQ群"
@@ -53,8 +55,8 @@ INJECT_SCENE = {"QQ群": "病娇文", "QQ私聊": "病娇文"}
 INJECT_ENABLED = False
 
 # 2026-11-18 修：/rp on 不压短句；别的 AI、群管家、喵捏口癖不许当真人语料学
-ROLEPLAY_STATE = r"C:\dsh\hers_workplace\live\roleplay-on.json"
-AI_SENDERS_FILE = r"C:\dsh\hers_workplace\live\ai-senders.json"
+ROLEPLAY_STATE = _MING_WS + r"\live\roleplay-on.json"
+AI_SENDERS_FILE = _MING_WS + r"\live\ai-senders.json"
 Q_BUTLER = "2854196310"
 AI_NICK_RE = re.compile(r"[（(][^）)]{0,30}ai[）)]", re.I)
 

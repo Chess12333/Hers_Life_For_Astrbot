@@ -32,13 +32,18 @@ import time
 from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star, register
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
+# 2026-11-23：平台 id 和名字不进代码。AstrBot 里这个平台叫什么就设 MING_PLATFORM_ID（默认 ming）。
+PLATFORM_ID = os.environ.get("MING_PLATFORM_ID", "ming")
+SELF_NAME = os.environ.get("MING_SELF_NAME", "溟")
 
-ROOT = "C:" + os.sep + "dsh" + os.sep + "hers_workplace"
+ROOT = _MING_WS
 OUTBOX = os.path.join(ROOT, "live", "file-outbox")
 SENT = os.path.join(OUTBOX, "sent")
 LOG = os.path.join(ROOT, "live", "file-outbox-log.jsonl")
 
-KNOWN_GROUPS = {700000001, 700000002, 700000003, 700000004, 700000005}
+KNOWN_GROUPS = {int(x) for x in (os.environ.get("MING_GROUPS") or "700000001,700000002,700000003,700000004,700000005").split(",") if x.strip()}
 MAX_BYTES = 25 * 1024 * 1024
 FORBIDDEN = (".env", ".pfx", ".p12", ".pem", ".key", "id_rsa", "credentials", "token")
 
@@ -167,7 +172,7 @@ class MingSendFile(Star):
         try:
             from astrbot.api.message_components import Plain
             from astrbot.core.message.message_event_result import MessageChain
-            umo = ("ming:GroupMessage:" if kind == "group" else "ming:FriendMessage:") + str(ident)
+            umo = (f"{PLATFORM_ID}:GroupMessage:" if kind == "group" else f"{PLATFORM_ID}:FriendMessage:") + str(ident)
             await self.context.send_message(umo, MessageChain(chain=[Plain(text[:300])]))
         except Exception as e:  # noqa: BLE001
             logger.warning("[ming-sendfile] caption 没发出去：%s", e)

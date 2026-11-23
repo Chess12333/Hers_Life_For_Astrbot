@@ -26,14 +26,21 @@ from datetime import datetime
 from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star, register
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
+# 2026-11-23：平台 id 和名字不进代码。AstrBot 里这个平台叫什么就设 MING_PLATFORM_ID（默认 ming）。
+PLATFORM_ID = os.environ.get("MING_PLATFORM_ID", "ming")
+SELF_NAME = os.environ.get("MING_SELF_NAME", "溟")
 
-ROOT = r"C:\dsh\hers_workplace"
+ROOT = _MING_WS
 LIVE = os.path.join(ROOT, "live")
 MSGS = os.path.join(LIVE, "astrbot-messages.jsonl")
 OBS = os.path.join(LIVE, "observations-astrbot.jsonl")
 MERGED = os.path.join(LIVE, "observations-all.jsonl")
 STATE = os.path.join(LIVE, "obs-export-state.json")
-OLD_OBS = r"C:\dsh\qq-agent\QQ-Agent-京玉-1019-r2-完整包\data\memory\observations.jsonl"
+# 2026-11-23：旧壳（QQ-Agent）的观察库不是每台机器都有，别写死一条永远读不到的路径。
+# 要合并就把路径填进环境变量 MING_OLD_OBS；没有就是空串，下面 os.path.exists('') 直接跳过。
+OLD_OBS = os.environ.get("MING_OLD_OBS") or ""
 
 EVERY_SEC = 600          # 每 10 分钟看一次有没有新话
 MIN_NEW = 15             # 少于这么多条新话就攒着
@@ -238,7 +245,7 @@ class ObsExport(Star):
                 prov = self.context.get_using_provider()
             except TypeError:
                 try:
-                    prov = self.context.get_using_provider("ming:FriendMessage:100000001")
+                    prov = self.context.get_using_provider(f"{PLATFORM_ID}:FriendMessage:100000001")
                 except Exception:
                     prov = None
             except Exception:

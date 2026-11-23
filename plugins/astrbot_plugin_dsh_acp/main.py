@@ -24,14 +24,16 @@ from datetime import datetime
 from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 DSH_BIN = r"C:\Users\you\AppData\Roaming\DSH\bin\dsh.cmd"
 # 2026-11-11 合并：一个实例两个 bot，各自的工作区。
 # ACP 的 cwd 是 session/new 时传的，所以一个 dsh 子进程就够，会话各在各的目录里。
 # 2026-11-11：dsh_ask 的调用者白名单（她 / 另一个使用者）
-ALLOWED_ASKERS = {"100000001", "100000003"}
+ALLOWED_ASKERS = {x.strip() for x in (os.environ.get("MING_OWNERS") or "100000001,100000003").split(",") if x.strip()}
 
-PROBE = r"C:\dsh\hers_workplace\live\multi-bot.log"
+PROBE = _MING_WS + r"\live\multi-bot.log"
 
 
 def probe(tag: str, msg: str):
@@ -46,7 +48,7 @@ def probe(tag: str, msg: str):
 
 
 WORKDIRS = {
-    "ming": r"C:\dsh\hers_workplace\hers_astrbot",
+    "ming": _MING_WS + r"\hers_astrbot",
     "linglan": r"C:\GLM\another_workplace",
 }
 WORKDIR = WORKDIRS["ming"]      # 兜底 / 旧引用
@@ -59,14 +61,14 @@ def workdir_for(umo: str) -> str:
     return wd
 STATE_DIR = r"C:\dsh\astrbot\data\plugin_data\astrbot_plugin_dsh_acp"
 MAP_FILE = os.path.join(STATE_DIR, "sessions.json")
-CALL_LOG = r"C:\dsh\hers_workplace\live\dsh-acp-calls.jsonl"
+CALL_LOG = _MING_WS + r"\live\dsh-acp-calls.jsonl"
 # 2026-11-11 21:5x 委托账本（旧壳 ming_delegate 的等价物）：每次状态变化追加一行，
 # 按 id 归并取最新。dsh_ask 直连会话没有账本的话，重启就查不到「那件办了没」。
-LEDGER = r"C:\dsh\hers_workplace\live\dsh-acp-ledger.jsonl"
+LEDGER = _MING_WS + r"\live\dsh-acp-ledger.jsonl"
 # 2026-11-13：DSH 要动文件/跑命令时会问一句「允许吗」，回答权在我这边。
 # 转过来的活本来就只有她和另一个使用者能派（ALLOWED_ASKERS），所以默认放行，但每一笔都留账。
-APPROVAL_FILE = r"C:\dsh\hers_workplace\live\acp-approvals.json"
-APPROVAL_LOG = r"C:\dsh\hers_workplace\live\dsh-acp-approvals.jsonl"
+APPROVAL_FILE = _MING_WS + r"\live\acp-approvals.json"
+APPROVAL_LOG = _MING_WS + r"\live\dsh-acp-approvals.jsonl"
 
 
 def _approval_mode() -> str:
@@ -97,12 +99,12 @@ MAX_BG = 3         # 同时挂着的后台任务上限
 
 # 2026-11-14 09:2x：自由活动的摇铃文件，由 DSH 侧 dsh-ming-browse 每分钟消费。
 # TTL 必须和 browse 那边一致（FREE_NOW_TTL_MS = 30 分钟），不然「等它起」判得比它认的久。
-FREE_NOW = r"C:\dsh\hers_workplace\live\free-now.json"
+FREE_NOW = _MING_WS + r"\live\free-now.json"
 FREE_TTL_MS = 30 * 60 * 1000
 # 2026-11-17 11:3x：摇铃只有一个位置。第二件转进来会被判 busy，写一行 queued 就没了下文——
 # 493268 → 0a362b 就是这么卡的：账本说「轮到它会自己开」，可两边都没有起它的东西。
 # 现在排队落到 free-now-queue.json，由 _queue_loop 每 15 秒把队头补进摇铃。
-FREE_NOW_QUEUE = r"C:\dsh\hers_workplace\live\free-now-queue.json"
+FREE_NOW_QUEUE = _MING_WS + r"\live\free-now-queue.json"
 QUEUE_TICK = 15
 
 
@@ -289,7 +291,7 @@ def _promote_queue() -> str:
 
 
 # 结果先落盘再发：回传失败不该等于结果消失（2026-11-13）。
-RESULT_DIR = r"C:\dsh\hers_workplace\live\dsh-acp-results"
+RESULT_DIR = _MING_WS + r"\live\dsh-acp-results"
 
 
 class AcpClient:

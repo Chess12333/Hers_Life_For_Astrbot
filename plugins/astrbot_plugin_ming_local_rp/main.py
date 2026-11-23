@@ -29,8 +29,10 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.event.filter import EventMessageType
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
-HOME = r"C:\dsh\hers_workplace"
+HOME = _MING_WS
 RP_STATE = os.path.join(HOME, "live", "roleplay-on.json")
 # 2026-11-21 03:2x：本体改成 Ollama（llama.cpp + CUDA）。transformers+bnb 在这张卡上只有 1–2 tok/s，GGUF Q4 跑满 40 tok/s。
 BRIEF = os.path.join(HOME, "live", "local-rp-brief.md")

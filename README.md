@@ -108,8 +108,31 @@ AstrBot 启动时会加载 `data/plugins/<name>/main.py`，插件会出现在 We
 ## 配置与依赖
 
 - **没有内置任何密钥。** 需要 API Key 的插件（语音、画图、模型）在自己的 `_conf_schema.json` 对应字段里填，或走 AstrBot 的 provider 配置。
-- **路径要改。** 这些插件假设工作区在 `C:/dsh/hers_workplace`，常量写在各插件 `main.py` 顶部（`ROOT` / `LIVE` / `BUS` 之类）。装到别的机器上先改这几行。
-- 依赖跟随 AstrBot 本体；插件本身只用标准库和 `astrbot.api`。
+- **工作区不用改代码了（2026-11-23 起）。** 每个插件顶部的常量都是 `os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"`——换机器只要在启动 AstrBot 之前把环境变量设上，一个文件都不用动。
+
+### 换机器：先设这几个环境变量
+
+| 变量 | 作用 | 不设会怎样 |
+|---|---|---|
+| `MING_WORKSPACE` | 数据工作区根目录（`live/`、`people/`、`about/`、`diary/`） | 退回作者本机路径，读不到就静默空白，最难查 |
+| `MING_PLATFORM_ID` | AstrBot 里这个平台的 id（umo 前缀，例如 `snowluma`） | 默认 `ming`；你的平台 id 不是它，主动消息/发文件/点名全部落空 |
+| `MING_SELF_NAME` | 群里喊名字时认的那个称呼 | 默认「溟」；别人装这套，他的 AI 不叫溟 |
+| `MING_HER_QQ` | 主人的 QQ 号（`HER_QQ` / `OWNER_QQ` / `HER_ID` 共用） | 退回占位号 `100000001`，等于谁都不是主人 |
+| `MING_OWNERS` | 逗号分隔：算「自己人」的号 | 退回占位集合 |
+| `MING_GROUPS` | 逗号分隔：要认的群号 | 退回占位集合（兴趣唤醒、主动发文件按它判断） |
+| `MING_OWNER_UMO` | 主动消息投递的完整 umo | 按 `MING_PLATFORM_ID` + `MING_HER_QQ` 自动拼 |
+| `MING_OLD_OBS` | 旧壳（QQ-Agent）`observations.jsonl` 路径 | 留空 = 不合并旧库，正常 |
+
+设完跑一次自检（列出还剩哪些占位值、哪些变量没设、哪个插件缺 requirements）：
+
+```bash
+python tools/check-placeholders.py
+```
+
+**注意**：变量要设在**启动 AstrBot 的那个环境**里。Windows 上如果 AstrBot 是计划任务/服务起的，在另一个 cmd 窗口 `set` 是没用的。
+- 依赖：默认只用标准库和 `astrbot.api`。只有两个插件带 `requirements.txt`（AstrBot 会自己读它装）：`ming_voice_paint` → `edge-tts`（顶部无条件 import，缺了整个插件不加载）、`ming_bili` → `aiohttp`。
+- `Pillow`（拼图）、`numpy`（记忆向量）、`dashscope`（语音引擎）都是**可选**的，缺了只有对应功能降级，不会让插件加载失败。
+- 第三方插件 `astrbot_plugin_burst` 默认 `idle_seconds: 20`：连发的消息合并成一条再交给模型，群里这样是对的，**私聊里就像卡住了**。想立刻回就把自己的 umo 加进它的 `bypass_umos`。
 - `astrbot_version` 标的是 `>=4.16,<5`，旧版本 API 可能对不上。
 
 ## 关于脱敏

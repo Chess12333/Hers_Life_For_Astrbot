@@ -32,8 +32,10 @@ from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star, register
 from astrbot.core.message.components import Plain
 from astrbot.core.message.message_event_result import MessageChain
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
-WORKSPACE = r"C:\dsh\hers_workplace"
+WORKSPACE = _MING_WS
 LIVE = os.path.join(WORKSPACE, "live")
 INTERESTS = os.path.join(LIVE, "interests.json")
 LOG_PATH = os.path.join(LIVE, "interest-log.jsonl")
@@ -52,7 +54,7 @@ FORWARD_FLAG = os.path.join(LIVE, "interest-forward.on")
 FORWARD_OUT = os.path.join(LIVE, "interest-forward.jsonl")
 
 # 只认这几个群（她开着的五个）；空集合 = 不限制
-GROUPS = {"700000001", "700000002", "700000004", "700000005", "700000003"}
+GROUPS = {x.strip() for x in (os.environ.get("MING_GROUPS") or "700000001,700000002,700000004,700000005,700000003").split(",") if x.strip()}
 
 GAP_SEC = 45 * 60          # 两次之间至少隔这么久（跟群里插话那条规矩对齐）
 MAX_PER_HOUR = 2
@@ -198,7 +200,7 @@ class MingInterest(Star):
             return False
         # 2026-11-19：临时关一天——live/curfew-off 里写当天日期就不宵禁（第二天自动恢复）
         try:
-            _p = r"C:\dsh\hers_workplace\live\curfew-off"
+            _p = _MING_WS + r"\live\curfew-off"
             if os.path.exists(_p):
                 with open(_p, encoding="utf-8") as _f:
                     _d = _f.read().strip()
@@ -287,7 +289,7 @@ class MingInterest(Star):
             if uid == "2854196310":
                 return
             try:
-                _ai = json.load(open(r"C:\dsh\hers_workplace\live\ai-senders.json", "r", encoding="utf-8"))
+                _ai = json.load(open(_MING_WS + r"\live\ai-senders.json", "r", encoding="utf-8"))
                 if uid in {str(x) for x in (_ai or {}).get("ids", [])}:
                     return
             except Exception:  # noqa: BLE001

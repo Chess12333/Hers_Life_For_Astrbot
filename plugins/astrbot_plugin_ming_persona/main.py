@@ -25,14 +25,19 @@ from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.provider import ProviderRequest
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
+# 2026-11-23：平台 id 和名字不进代码。AstrBot 里这个平台叫什么就设 MING_PLATFORM_ID（默认 ming）。
+PLATFORM_ID = os.environ.get("MING_PLATFORM_ID", "ming")
+SELF_NAME = os.environ.get("MING_SELF_NAME", "溟")
 
 try:  # v4.30+ 走这里
     from astrbot.api.agents import TextPart
 except Exception:  # 4.29.x
     from astrbot.core.agent.message import TextPart
 
-LIVE = r"C:\dsh\hers_workplace\live"
-PEOPLE_DIR = r"C:\dsh\hers_workplace\people"
+LIVE = _MING_WS + r"\live"
+PEOPLE_DIR = _MING_WS + r"\people"
 MUTE_FILE = os.path.join(LIVE, "qq-mute-now.json")
 
 # ── 收尾沉默（2026-11-11 23:2x）──────────────────────────────
@@ -192,7 +197,7 @@ def _mood_facts() -> str:
 
 PERSONA_FILE = os.path.join(LIVE, "qq-persona.md")
 PERSONA_ID = "ming"
-OWNER_QQ = "100000001"
+OWNER_QQ = os.environ.get("MING_HER_QQ") or "100000001"
 
 # (文件名, 标题, 给谁)  给谁: owner=只她私聊 / all=所有人 / owner_or_group=她私聊+群
 ROLEPLAY_STATE = os.path.join(LIVE, "roleplay-on.json")
@@ -539,6 +544,32 @@ class MingPersona(Star):
     # 它走 _ensure_persona_and_skills 读 Persona。所以这里同步一次。
     @filter.on_astrbot_loaded()
     async def sync_persona(self):
+        await self._push_persona()
+        # 2026-11-23：以前只在启动时同步一次，于是「启动之后才写的 live/qq-persona.md」非得重启 AstrBot 才进 Persona 表
+        # （新装机器第一次就是这个顺序）。改成后台每 20 秒看一眼 mtime，变了就再推一遍——只 stat 一个文件，不花钱。
+        try:
+            if getattr(self, "_persona_watch", None) is None:
+                self._persona_watch = asyncio.create_task(self._watch_persona())
+        except Exception as e:
+            logger.warning(f"ming-persona: 起人设监听失败：{e}")
+
+    async def _watch_persona(self):
+        try:
+            last = os.path.getmtime(PERSONA_FILE)
+        except OSError:
+            last = None
+        while True:
+            await asyncio.sleep(20)
+            try:
+                mt = os.path.getmtime(PERSONA_FILE)
+            except OSError:
+                continue
+            if mt != last:
+                last = mt
+                logger.info("ming-persona: 人设文件变了，重新同步 Persona 表")
+                await self._push_persona()
+
+    async def _push_persona(self):
         text = _read(PERSONA_FILE)
         if not text:
             logger.warning("ming-persona: 人设文件读不到，跳过同步")
@@ -1300,7 +1331,7 @@ def _is_directed_to_self(event) -> bool:
     if ("?" in text or "？" in text) and not found_at:
         return True
     umo = getattr(event, "unified_msg_origin", "") or ""
-    name = "溟" if umo.startswith("ming:") else ("岚" if umo.startswith("linglan:") else "")
+    name = SELF_NAME if umo.startswith(PLATFORM_ID + ":") else ("岚" if umo.startswith("linglan:") else "")
     return bool(name and name in text)
 
 

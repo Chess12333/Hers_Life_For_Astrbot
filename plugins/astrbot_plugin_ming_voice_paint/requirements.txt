@@ -1,0 +1,3 @@
+# 2026-11-23：main.py 顶部无条件 import edge_tts（默认引擎就是它），缺了插件整个不加载。
+# AstrBot 会自动读这份文件装依赖。
+edge-tts>=6.1.9

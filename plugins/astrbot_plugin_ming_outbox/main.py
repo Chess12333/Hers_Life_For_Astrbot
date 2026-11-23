@@ -26,14 +26,16 @@ from astrbot.api import logger
 from astrbot.api.message_components import At, Image, Plain, Record
 from astrbot.core.message.message_event_result import MessageChain
 from astrbot.api.star import Context, Star
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
-PROBE = r"C:\dsh\hers_workplace\live\multi-bot.log"
+PROBE = _MING_WS + r"\live\multi-bot.log"
 
 def _in_curfew(now=None) -> bool:
     """2026-11-19：出站箱以前不看时间，等于绕过群门。群消息 00:30-10:30 不发。"""
     # 2026-11-19：临时关一天——live/curfew-off 里写当天日期就不宵禁（第二天自动恢复）
     try:
-        _p = r"C:\dsh\hers_workplace\live\curfew-off"
+        _p = _MING_WS + r"\live\curfew-off"
         if os.path.exists(_p):
             with open(_p, encoding="utf-8") as _f:
                 _d = _f.read().strip()
@@ -48,7 +50,7 @@ def _in_curfew(now=None) -> bool:
 
 
 BOXES = [
-    {"platform": "ming", "live": r"C:\dsh\hers_workplace\live"},
+    {"platform": "ming", "live": _MING_WS + r"\live"},
 ]
 
 TICK = 3
@@ -105,7 +107,7 @@ def probe(tag: str, msg: str):
 
 
 # 2026-11-18 15:3x：群在禁言期就别撞墙（今天 48 次 retcode=100 / result=120）。
-MUTE_NOW_FILE = r"C:\dsh\hers_workplace\live\qq-mute-now.json"
+MUTE_NOW_FILE = _MING_WS + r"\live\qq-mute-now.json"
 
 
 def _is_group_muted(gid: str) -> bool:

@@ -39,13 +39,15 @@ from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.message_components import Image, Plain
 from astrbot.api.star import Context, Star, register
 from astrbot.core.message.message_event_result import MessageChain
+# 2026-11-23：工作区不写死。换机器设环境变量 MING_WORKSPACE 即可；没设就退回作者本机那份。
+_MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 
 try:
     from PIL import Image as PILImage, ImageDraw, ImageFont
 except Exception:  # pragma: no cover
     PILImage = None
 
-HER = r"C:\dsh\hers_workplace"
+HER = _MING_WS
 BILI_GET_PY = os.path.join(HER, "scripts", "bili-get.py")
 BILI_FRAMES_JS = os.path.join(HER, "scripts", "bili-frames.mjs")
 TMP = r"C:\dsh\astrbot\data\temp\ming-bili"
