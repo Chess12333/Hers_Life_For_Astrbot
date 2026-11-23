@@ -63,6 +63,33 @@
 | `astrbot_plugin_reply_policy` | astrbot_plugin_reply_policy | 群聊回复概率与每分钟额度，私聊不受限 | 0.1.0 |
 <!-- PLUGIN_TABLE:END -->
 
+## 这套部署里还装了哪些别人的插件
+
+下面这 11 个**不在本仓库里**，是各自作者的 AstrBot 插件，从插件市场或 GitHub 直接装的。列出来是因为上面那 24 个不是孤立工作的——它们默认身旁有这些插件在跑。要装请去原作者仓库拿，本仓库不复制、不分发、不打包别人的代码。
+
+| 插件 | 作者 | 出处 | 在这套里干什么 |
+| --- | --- | --- | --- |
+| `astrbot_plugin_burst` | Lansheen3096 | [GitHub](https://github.com/Lansheen3096/astrbot_plugin_burst) | 入站防抖：连发的几条先合并成一条再交给模型，省 token 也更好懂 |
+| `astrbot_plugin_pacer` | Lansheen3096 | [GitHub](https://github.com/Lansheen3096/astrbot_plugin_pacer) | 出站打断：对方插话就停发剩余分段，并把历史截成实际发出去的部分 |
+| `astrbot_plugin_group_guardian` | zhaisir | [GitHub](https://github.com/zcj-ui/astrbot_plugin_group_guardian) | 群管 + LLM 审核：28 项群管工具、正则初筛 + 上下文审核、WebUI 面板 |
+| `astrbot_plugin_qq_tools` | YUMU1658 | [GitHub](https://github.com/YUMU1658/astrbot_plugin_qq_tools) | QQ 侧动手能力：引用回复、撤回、检索最近消息、群管、网页、视频分析、定时唤醒 |
+| `astrbot_plugin_astrbot_enhance_mode` | 阿汐 | [GitHub](https://github.com/Axi404/astrbot_plugin_astrbot_enhance_mode) | 群聊增强：React 模式、主动回复、标签解析、封禁控制、Memory RAG + WebUI |
+| `astrbot_plugin_anysearch` | AgIzT | [GitHub](https://github.com/AgIzT/astrbot_plugin_anysearch) | 联网搜索：通用网页、新闻、文档检索与正文提取 |
+| `astrbot_plugin_sticker_sense` | YanZephyr14 & AstrBot Community | [GitHub](https://github.com/YanZephyr14/astrbot_plugin_sticker_sense) | 表情感知：区分表情包与照片，语义化解析 QQ 表情，让模型会接梗 |
+| `astrbot_plugin_meme_manager` | anka | [GitHub](https://github.com/anka-afk/astrbot_plugin_meme_manager) | 表情包管理：发送、语义检索、云端同步 |
+| `astrbot_plugin_smart_imagechat_hub` | 青尘工作室 | [GitHub](https://github.com/QingchenWait/astrbot_plugin_smart_imagechat_hub) | 图片对话：多模态标签、斗图、主动表情 |
+| `astrbot_plugin_get_px` | Sham1k0 | [GitHub](https://github.com/shitianyaa/astrbot_plugin_get_px) | 发图与签到：Lolicon / Pixiv 双源回退，分群内容规则 |
+| `astrbot_plugin_codeforces_helper` | Zinc-acetate | [GitHub](https://github.com/Zinc-acetate/astrbot_plugin_codeforces_helper) | Codeforces 训练助手：AC 记录同步、Rating、排行榜、比赛提醒 |
+
+**分工上的咬合点**（为什么这些不能省）：
+
+- `burst` 管入站合流，`pacer` 管出站被打断，中间那段「怎么切、怎么发、发完记账」才是 `ming_outbox` / `ming_said` 的活。三者不重叠。
+- `group_guardian` 做的是「该不该撤回、该不该禁」，`reply_policy` 做的是「这一轮该不该开口、能开几句话」。一个管内容，一个管频率。
+- `sticker_sense` / `meme_manager` / `smart_imagechat_hub` 负责把图变成可读的东西和可发的表情；没有它们，这套插件收到的图只是一串链接。
+
+**注意：其中 6 个我们本地改过代码**（`pacer` 16 处备份、`burst` 3 处，`enhance_mode` / `group_guardian` / `qq_tools` / `smart_imagechat_hub` 各 1 处）。改动只留在本机，没有提 PR、没有回馈上游。所以你装原版时，行为可能和这里描述的不完全一样。
+
+另外 `data/plugins-off/` 和 `plugins_off/` 里还有几个试过但没启用的（不计入上表）。
 ## 安装
 
 ```bash
