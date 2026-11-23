@@ -89,7 +89,7 @@
 
 **注意：其中 6 个我们本地改过代码**（`pacer` 16 处备份、`burst` 3 处，`enhance_mode` / `group_guardian` / `qq_tools` / `smart_imagechat_hub` 各 1 处）。改动只留在本机，没有提 PR、没有回馈上游。所以你装原版时，行为可能和这里描述的不完全一样。
 
-另外 `data/plugins-off/` 和 `plugins_off/` 里还有几个试过但没启用的（不计入上表）。
+另外 AstrBot 根下还有 `data/plugins-off/`、`plugins_off/` 两个停用目录，里面是试过但没开的插件，不计入上表。
 ## 安装
 
 ```bash
