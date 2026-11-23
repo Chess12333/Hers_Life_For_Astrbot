@@ -30,6 +30,7 @@ from astrbot.api.star import Context, Star, register
 _MING_WS = os.environ.get("MING_WORKSPACE") or r"C:\dsh\hers_workplace"
 # 2026-11-23：平台 id 和名字不进代码。AstrBot 里这个平台叫什么就设 MING_PLATFORM_ID（默认 ming）。
 PLATFORM_ID = os.environ.get("MING_PLATFORM_ID", "ming")
+HER_QQ = os.environ.get("MING_HER_QQ") or "100000001"
 SELF_NAME = os.environ.get("MING_SELF_NAME", "溟")
 
 ROOT = _MING_WS
@@ -245,7 +246,7 @@ class ObsExport(Star):
                 prov = self.context.get_using_provider()
             except TypeError:
                 try:
-                    prov = self.context.get_using_provider(f"{PLATFORM_ID}:FriendMessage:100000001")
+                    prov = self.context.get_using_provider(f"{PLATFORM_ID}:FriendMessage:{HER_QQ}")
                 except Exception:
                     prov = None
             except Exception:

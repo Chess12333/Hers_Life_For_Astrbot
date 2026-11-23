@@ -97,7 +97,7 @@ def _parse_target(target, event: AstrMessageEvent | None = None) -> tuple[str, i
             return "private", int(event.get_sender_id())
         except Exception:
             pass
-    raise ValueError("不知道该发给谁（target 例：group:700000001 / private:100000001）")
+    raise ValueError("不知道该发给谁（target 例：group:<群号> / private:<QQ号>）")
 
 
 @register(

@@ -117,3 +117,6 @@ console.log(`dst = ${dstRoot}${dry ? "（dry，未写盘）" : ""}`);
 console.log(report.join("\n"));
 console.log(`合计 ${copied} 个文件，跳过 ${skipped} 个（缓存/备份/音频），脱敏替换 ${replaced} 处`);
 if (!REDACT.length) console.log("!! 没找到 tools/redact.local.json，这次只过滤没脱敏");
+// 同步完自觉跑一遍检查：脱敏表盖得住号码和人名，盖不住「她的原话被嵌进提示词」。
+// 这一步不替人判断，只把可疑行摆到眼前——改不改还得看那一句到底该不该公开。
+console.log("\n下一步：python tools/check-placeholders.py   （看「提示词里的私人痕迹」那一节）");

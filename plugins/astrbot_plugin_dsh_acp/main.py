@@ -32,6 +32,7 @@ DSH_BIN = r"C:\Users\you\AppData\Roaming\DSH\bin\dsh.cmd"
 # ACP 的 cwd 是 session/new 时传的，所以一个 dsh 子进程就够，会话各在各的目录里。
 # 2026-11-11：dsh_ask 的调用者白名单（她 / 另一个使用者）
 ALLOWED_ASKERS = {x.strip() for x in (os.environ.get("MING_OWNERS") or "100000001,100000003").split(",") if x.strip()}
+HER_QQ = os.environ.get("MING_HER_QQ") or "100000001"
 
 PROBE = _MING_WS + r"\live\multi-bot.log"
 
@@ -120,7 +121,7 @@ def _chat_key(umo: str) -> str:
             return "group:" + sid
         if "Friend" in kind or "Private" in kind:
             return "private:" + sid
-    return "private:100000001"
+    return "private:" + HER_QQ
 
 
 def _free_now_pending() -> str:
@@ -235,7 +236,7 @@ def _reclaim(d: dict) -> None:
     rows.insert(0, {
         "job": job, "task": raw,
         "umo": d.get("umo") or "",
-        "chatKey": d.get("chatKey") or "private:100000001",
+        "chatKey": d.get("chatKey") or ("private:" + HER_QQ),
         "tries": tries,
     })
     try:
@@ -270,7 +271,7 @@ def _promote_queue() -> str:
             job,
             str(head.get("task") or ""),
             str(head.get("umo") or ""),
-            str(head.get("chatKey") or "private:100000001"),
+            str(head.get("chatKey") or ("private:" + HER_QQ)),
             promoted=True,
             tries=tries,
         ))

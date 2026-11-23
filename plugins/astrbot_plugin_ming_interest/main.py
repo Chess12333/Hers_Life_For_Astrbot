@@ -196,7 +196,7 @@ class MingInterest(Star):
 
     def _in_quiet(self) -> bool:
         # 2026-11-18 15:3x：AI家族群豁免宵禁（她定的「不用限定一天几句」那边）。
-        if getattr(self, "_cur_gid", "") == "700000004":
+        if getattr(self, "_cur_gid", "") == (os.environ.get("MING_QUIET_EXEMPT") or "700000004"):
             return False
         # 2026-11-19：临时关一天——live/curfew-off 里写当天日期就不宵禁（第二天自动恢复）
         try:

@@ -16,6 +16,8 @@
 """
 
 import argparse
+import ast
+import json
 import os
 import re
 import sys
@@ -45,14 +47,27 @@ ENV_VARS = [
 
 STANDALONE_FILES = {"tools/check-placeholders.py"}
 
+# 私人痕迹：只认「进模型的那种写法」，避免把开发注释和版本号算进来。
+REDACT_FILE = ROOT / "tools" / "redact.local.json"
+# 「她的原话被嵌进提示词」：她[中间隔几个字]说「至少三四字」，或者她给的「…」。
+# 引号里只有一两个字（「你」「%s」）是说明和日志格式，不算原话。
+HER_QUOTE_RE = re.compile(r"她[^。\n]{0,14}说「[^」%\n]{3,}」|(?:她给的|她定的|她批的|她报的)「[^」%\n]{3,}」")
+DATE_RE = re.compile(r"20\d{2}-\d{1,2}-\d{1,2}")
+CLOCK_RE = re.compile(r"(?<![\d:])\d{1,2}[:：]\d{2}(?![\d:])")
+GROUP_RE = re.compile(r"深水区|浅水区|巅峰之战|AI家族群|感谢对战")
+
 
 FALLBACK_MARK = 'os.environ.get("MING_WORKSPACE")'
 # 一行是不是「说明」而不是「代码」：注释、docstring 里、yaml 的 desc 行、作者 fallback 默认值、纯中文叙述。
 PROSE_HEAD = ("desc:", "description:")
 
 
-def classify(line: str, in_doc: bool) -> str:
+def classify(line: str, in_doc: bool, rel: str = "") -> str:
     s = line.strip()
+    name = rel.rsplit("/", 1)[-1]
+    # 配置模板的默认号、自测脚本里的样例号，都是给人替换的，不算残留代码。
+    if name == "_conf_schema.json" or name.startswith("qa_"):
+        return "默认值"
     if in_doc or '"""' in line or "'''" in line or s.startswith("#") or s.startswith(PROSE_HEAD):
         return "说明"
     if FALLBACK_MARK in line or "os.environ.get(" in line:
@@ -78,7 +93,7 @@ def scan() -> list:
                 q = line.count('"""') + line.count("'''")
                 if q % 2 == 1:
                     in_doc = not in_doc
-            tag = classify(line, in_doc)
+            tag = classify(line, in_doc, rel)
             for kind, rx in (("号码", QQ_RE), ("工作区路径", WS_RE)):
                 for m in rx.finditer(line):
                     val = m.group(1) if m.lastindex else m.group(0)
@@ -133,6 +148,63 @@ def check_requirements() -> list:
     return missing
 
 
+def redact_names() -> list:
+    """tools/redact.local.json 里那些「原串」——它们不该出现在仓库任何地方。"""
+    try:
+        rows = json.loads(REDACT_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return [r[0] for r in rows if isinstance(r, list) and r and isinstance(r[0], str) and len(r[0]) >= 2]
+
+
+def scan_prompts() -> list:
+    """提示词里有没有留下作者本机的私人痕迹。
+
+    只看「会进模型」的字符串常量：docstring、纯日期版本号、正则/正则样式的枚举
+    都不算。判据四条——她的原话被嵌进提示词、日期旁边还带着具体时刻、
+    真实群名、脱敏表里的真实人名。
+    """
+    names = redact_names()
+    name_re = re.compile("|".join(re.escape(n) for n in names)) if names else None
+    hits = []
+    for path in sorted(PLUGINS.rglob("*.py")):
+        try:
+            text = path.read_text(encoding="utf-8")
+            tree = ast.parse(text)
+        except (OSError, UnicodeDecodeError, SyntaxError):
+            continue
+        rel = path.relative_to(ROOT).as_posix()
+        docs = set()
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                d = ast.get_docstring(node, clean=False)
+                if d:
+                    docs.add(d)
+        for node in ast.walk(tree):
+            if not (isinstance(node, ast.Constant) and isinstance(node.value, str)):
+                continue
+            s = node.value
+            if len(s) < 4 or s in docs:
+                continue
+            kinds = []
+            if HER_QUOTE_RE.search(s):
+                kinds.append("她的原话")
+            if DATE_RE.search(s) and CLOCK_RE.search(s):
+                kinds.append("日期+时刻")
+            if GROUP_RE.search(s):
+                kinds.append("真实群名")
+            if name_re is not None and name_re.search(s):
+                kinds.append("真实人名")
+            if kinds:
+                hits.append({
+                    "file": rel,
+                    "line": node.lineno,
+                    "kind": "/".join(kinds),
+                    "text": " ".join(s.split()),
+                })
+    return hits
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strict", action="store_true", help="代码行还有占位值就返回 1")
@@ -173,6 +245,18 @@ def main() -> int:
     print()
 
     print("=" * 70)
+    print("提示词里的私人痕迹（只看进模型的字符串；docstring、版本号、正则不算）")
+    print("=" * 70)
+    prompt_hits = scan_prompts()
+    if prompt_hits:
+        for h in prompt_hits:
+            print(f"  {h['file']}:{h['line']}  [{h['kind']}]")
+            print(f"         {h['text'][:110]}")
+    else:
+        print("  （干净）")
+    print()
+
+    print("=" * 70)
     print("requirements.txt")
     print("=" * 70)
     missing = check_requirements()
@@ -192,7 +276,7 @@ def main() -> int:
     else:
         print("结论：代码里没有残留占位值；剩下的都在注释/文档里，不影响运行。")
 
-    if args.strict and code_hits:
+    if args.strict and (code_hits or prompt_hits):
         return 1
     return 0
 

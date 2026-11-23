@@ -146,6 +146,16 @@ python tools/check-placeholders.py
 
 占位符只改字面，不改逻辑：`GROUPS`、`OWNERS`、`HER_QQ` 这些集合的结构原样保留，换回你以为的号就能跑。
 
+**脱敏表管得住号码和人名，管不住「她的原话被写进提示词」。** 那一类靠自检的第五项：
+
+```bash
+python tools/check-placeholders.py --strict
+```
+
+它只看**会进模型**的字符串常量（docstring、版本号、正则不算），查四种：她的原话被嵌进提示词（`她…说「三四个字以上」`）、日期旁边还带着具体时刻、真实群名、脱敏表里的真实人名。有命中就返回 1——这一类没有「默认值」可退，留着就是留在人眼前。
+
+从线上同步之后也顺手跑一遍，`sync-from-live.mjs` 末尾会提醒。
+
 ## 这个仓库里没有什么
 
 同步脚本（`tools/sync-from-live.mjs`）挡在外面：
